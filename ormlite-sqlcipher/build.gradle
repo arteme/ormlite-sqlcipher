@@ -1,4 +1,5 @@
 apply plugin: 'com.android.library'
+apply plugin: 'maven-publish'
 
 ext {
     bintrayRepo = 'public'
@@ -13,7 +14,7 @@ ext {
     siteUrl = 'https://github.com/jakub-pmp/ormlite-sqlcipher'
     gitUrl = 'https://github.com/jakub-pmp/ormlite-sqlcipher'
 
-    libraryVersion = '2.0'
+    libraryVersion = '2.0.1'
 
     developerId = 'jmirota-pmp'
     developerName = 'Jakub Mirota'
@@ -54,6 +55,19 @@ android {
     }
 
     tasks.withType(Javadoc).all { enabled = false }
+}
+
+afterEvaluate {
+    publishing {
+        publications {
+            release(MavenPublication) {
+                from components.findByName('release')
+                groupId = "com.patientmpower.ormliteSqlcipher"
+                artifactId = "ormlite-sqlcipher"
+                version = '2.0.1'
+            }
+        }
+    }
 }
 
 dependencies {
