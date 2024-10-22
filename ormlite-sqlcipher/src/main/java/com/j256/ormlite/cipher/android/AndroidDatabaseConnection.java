@@ -6,8 +6,6 @@ import com.j256.ormlite.field.SqlType;
 import com.j256.ormlite.logger.Logger;
 import com.j256.ormlite.logger.LoggerFactory;
 import com.j256.ormlite.misc.IOUtils;
-import com.j256.ormlite.misc.SqlExceptionUtil;
-import com.j256.ormlite.misc.VersionUtils;
 import com.j256.ormlite.stmt.GenericRowMapper;
 import com.j256.ormlite.stmt.StatementBuilder.StatementType;
 import com.j256.ormlite.support.CompiledStatement;
@@ -19,6 +17,7 @@ import net.sqlcipher.database.SQLiteDatabase;
 import net.sqlcipher.database.SQLiteStatement;
 
 import java.io.IOException;
+import java.sql.Connection;
 import java.sql.SQLException;
 import java.sql.Savepoint;
 
@@ -66,7 +65,7 @@ public class AndroidDatabaseConnection implements DatabaseConnection {
             // You have to explicitly commit your transactions, so this is sort of correct
             return !inTransaction;
         } catch (android.database.SQLException e) {
-            throw SqlExceptionUtil.create("problems getting auto-commit from database", e);
+            throw new SQLException("problems getting auto-commit from database", e);
         }
     }
 
@@ -95,7 +94,7 @@ public class AndroidDatabaseConnection implements DatabaseConnection {
             logger.trace("{}: save-point set with name {}", this, name);
             return new OurSavePoint(name);
         } catch (android.database.SQLException e) {
-            throw SqlExceptionUtil.create("problems beginning transaction " + name, e);
+            throw new SQLException("problems beginning transaction " + name, e);
         }
     }
 
@@ -118,9 +117,9 @@ public class AndroidDatabaseConnection implements DatabaseConnection {
             }
         } catch (android.database.SQLException e) {
             if (savepoint == null) {
-                throw SqlExceptionUtil.create("problems committing transaction", e);
+                throw new SQLException("problems committing transaction", e);
             } else {
-                throw SqlExceptionUtil.create("problems committing transaction " + savepoint.getSavepointName(), e);
+                throw new SQLException("problems committing transaction " + savepoint.getSavepointName(), e);
             }
         }
     }
@@ -137,9 +136,9 @@ public class AndroidDatabaseConnection implements DatabaseConnection {
             }
         } catch (android.database.SQLException e) {
             if (savepoint == null) {
-                throw SqlExceptionUtil.create("problems rolling back transaction", e);
+                throw new SQLException("problems rolling back transaction", e);
             } else {
-                throw SqlExceptionUtil.create("problems rolling back transaction " + savepoint.getSavepointName(), e);
+                throw new SQLException("problems rolling back transaction " + savepoint.getSavepointName(), e);
             }
         }
     }
@@ -182,7 +181,7 @@ public class AndroidDatabaseConnection implements DatabaseConnection {
             logger.trace("{}: insert statement is compiled and executed, changed {}: {}", this, result, statement);
             return result;
         } catch (android.database.SQLException e) {
-            throw SqlExceptionUtil.create("inserting to database failed: " + statement, e);
+            throw new SQLException("inserting to database failed: " + statement, e);
         } finally {
             closeQuietly(stmt);
         }
@@ -219,7 +218,7 @@ public class AndroidDatabaseConnection implements DatabaseConnection {
                 }
             }
         } catch (android.database.SQLException e) {
-            throw SqlExceptionUtil.create("queryForOne from database failed: " + statement, e);
+            throw new SQLException("queryForOne from database failed: " + statement, e);
         } finally {
             IOUtils.closeQuietly(results);
             closeQuietly(cursor);
@@ -235,7 +234,7 @@ public class AndroidDatabaseConnection implements DatabaseConnection {
             logger.trace("{}: query for long simple query returned {}: {}", this, result, statement);
             return result;
         } catch (android.database.SQLException e) {
-            throw SqlExceptionUtil.create("queryForLong from database failed: " + statement, e);
+            throw new SQLException("queryForLong from database failed: " + statement, e);
         } finally {
             closeQuietly(stmt);
         }
@@ -257,7 +256,7 @@ public class AndroidDatabaseConnection implements DatabaseConnection {
             logger.trace("{}: query for long raw query returned {}: {}", this, result, statement);
             return result;
         } catch (android.database.SQLException e) {
-            throw SqlExceptionUtil.create("queryForLong from database failed: " + statement, e);
+            throw new SQLException("queryForLong from database failed: " + statement, e);
         } finally {
             closeQuietly(cursor);
             IOUtils.closeQuietly(results);
@@ -286,7 +285,7 @@ public class AndroidDatabaseConnection implements DatabaseConnection {
             logger.trace("{}: db {} isOpen returned {}", this, db, isOpen);
             return !isOpen;
         } catch (android.database.SQLException e) {
-            throw SqlExceptionUtil.create("problems detecting if the database is closed", e);
+            throw new SQLException("problems detecting if the database is closed", e);
         }
     }
 
@@ -308,6 +307,11 @@ public class AndroidDatabaseConnection implements DatabaseConnection {
         }
     }
 
+    @Override
+    public Connection getUnderlyingConnection() {
+        return null;
+    }
+
     private int update(String statement, Object[] args, FieldType[] argFieldTypes, String label) throws SQLException {
         SQLiteStatement stmt = null;
         try {
@@ -315,7 +319,7 @@ public class AndroidDatabaseConnection implements DatabaseConnection {
             bindArgs(stmt, args, argFieldTypes);
             stmt.execute();
         } catch (android.database.SQLException e) {
-            throw SqlExceptionUtil.create("updating database failed: " + statement, e);
+            throw new SQLException("updating database failed: " + statement, e);
         } finally {
             closeQuietly(stmt);
             stmt = null;
