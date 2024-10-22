@@ -6,7 +6,6 @@ import com.j256.ormlite.db.DatabaseType;
 import com.j256.ormlite.cipher.db.SqliteAndroidDatabaseType;
 import com.j256.ormlite.logger.Logger;
 import com.j256.ormlite.logger.LoggerFactory;
-import com.j256.ormlite.misc.SqlExceptionUtil;
 import com.j256.ormlite.support.BaseConnectionSource;
 import com.j256.ormlite.support.ConnectionSource;
 import com.j256.ormlite.support.DatabaseConnection;

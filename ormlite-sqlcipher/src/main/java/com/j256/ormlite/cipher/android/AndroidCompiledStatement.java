@@ -4,7 +4,6 @@ import com.j256.ormlite.dao.ObjectCache;
 import com.j256.ormlite.field.SqlType;
 import com.j256.ormlite.logger.Logger;
 import com.j256.ormlite.logger.LoggerFactory;
-import com.j256.ormlite.misc.SqlExceptionUtil;
 import com.j256.ormlite.stmt.StatementBuilder.StatementType;
 import com.j256.ormlite.support.CompiledStatement;
 import com.j256.ormlite.support.DatabaseResults;
@@ -166,6 +165,11 @@ public class AndroidCompiledStatement implements CompiledStatement {
 	@Override
 	public void setQueryTimeout(long millis) {
 		// as far as I could tell this is not supported by Android API
+	}
+
+	@Override
+	public String getStatement() {
+		return "";
 	}
 
 	/***
