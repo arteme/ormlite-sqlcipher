@@ -25,20 +25,9 @@ import java.sql.SQLException;
 public class SqliteAndroidDatabaseType extends BaseSqliteDatabaseType {
 
 	@Override
-	public void loadDriver() {
-		// noop
-	}
-
-	@Override
 	public boolean isDatabaseUrlThisType(String url, String dbTypePart) {
 		// not used by the android code
 		return true;
-	}
-
-	@Override
-	protected String getDriverClassName() {
-		// no driver to load in android-land
-		return null;
 	}
 
 	@Override

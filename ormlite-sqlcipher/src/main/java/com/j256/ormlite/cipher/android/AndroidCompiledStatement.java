@@ -1,5 +1,7 @@
 package com.j256.ormlite.cipher.android;
 
+import android.support.annotation.NonNull;
+
 import com.j256.ormlite.dao.ObjectCache;
 import com.j256.ormlite.field.SqlType;
 import com.j256.ormlite.logger.Logger;
@@ -24,7 +26,7 @@ import java.util.List;
  */
 public class AndroidCompiledStatement implements CompiledStatement {
 
-	private static Logger logger = LoggerFactory.getLogger(AndroidCompiledStatement.class);
+	private static final Logger logger = LoggerFactory.getLogger(AndroidCompiledStatement.class);
 
 	private static final String[] NO_STRING_ARGS = new String[0];
 	private static final com.j256.ormlite.cipher.android.compat.ApiCompatibility apiCompatibility = com.j256.ormlite.cipher.android.compat.ApiCompatibilityUtils.getCompatibility();
@@ -120,7 +122,7 @@ public class AndroidCompiledStatement implements CompiledStatement {
 	public void setObject(int parameterIndex, Object obj, SqlType sqlType) throws SQLException {
 		isInPrep();
 		if (args == null) {
-			args = new ArrayList<Object>();
+			args = new ArrayList<>();
 		}
 		if (obj == null) {
 			args.add(parameterIndex, null);
@@ -195,13 +197,14 @@ public class AndroidCompiledStatement implements CompiledStatement {
 				cursor.moveToFirst();
 				logger.trace("{}: started rawQuery cursor for: {}", this, finalSql);
 			} catch (android.database.SQLException e) {
-				throw SqlExceptionUtil.create("Problems executing Android query: " + finalSql, e);
+				throw new SQLException("Problems executing Android query: " + finalSql, e);
 			}
 		}
 
 		return cursor;
 	}
 
+	@NonNull
 	@Override
 	public String toString() {
 		return getClass().getSimpleName() + "@" + Integer.toHexString(super.hashCode());
@@ -214,7 +217,7 @@ public class AndroidCompiledStatement implements CompiledStatement {
 		try {
 			db.execSQL(finalSql, argArray);
 		} catch (android.database.SQLException e) {
-			throw SqlExceptionUtil.create("Problems executing " + label + " Android statement: " + finalSql, e);
+			throw new SQLException("Problems executing " + label + " Android statement: " + finalSql, e);
 		}
 		int result;
 		SQLiteStatement stmt = null;
@@ -245,7 +248,7 @@ public class AndroidCompiledStatement implements CompiledStatement {
 			// this will work for Object[] as well as String[]
 			return NO_STRING_ARGS;
 		} else {
-			return args.toArray(new Object[args.size()]);
+			return args.toArray(new Object[0]);
 		}
 	}
 
@@ -254,7 +257,7 @@ public class AndroidCompiledStatement implements CompiledStatement {
 			return NO_STRING_ARGS;
 		} else {
 			// we assume we have Strings in args
-			return args.toArray(new String[args.size()]);
+			return args.toArray(new String[0]);
 		}
 	}
 }
