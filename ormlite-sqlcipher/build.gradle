@@ -55,13 +55,17 @@ android {
     }
 
     tasks.withType(Javadoc).all { enabled = false }
+
+    publishing {
+        singleVariant('release')
+    }
 }
 
 afterEvaluate {
     publishing {
         publications {
             release(MavenPublication) {
-                from components.findByName('release')
+                from components.release
                 groupId = "com.patientmpower.ormliteSqlcipher"
                 artifactId = "ormlite-sqlcipher"
                 version = '2.0.4'
