@@ -57,7 +57,9 @@ android {
     tasks.withType(Javadoc).all { enabled = false }
 
     publishing {
-        singleVariant('release')
+        singleVariant('release') {
+            withSourcesJar()
+        }
     }
 }
 
