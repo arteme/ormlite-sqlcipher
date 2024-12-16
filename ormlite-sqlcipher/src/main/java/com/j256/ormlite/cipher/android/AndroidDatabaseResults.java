@@ -1,11 +1,11 @@
 package com.j256.ormlite.cipher.android;
 
+import android.database.Cursor;
+
 import com.j256.ormlite.dao.ObjectCache;
 import com.j256.ormlite.db.DatabaseType;
 import com.j256.ormlite.cipher.db.SqliteAndroidDatabaseType;
 import com.j256.ormlite.support.DatabaseResults;
-
-import net.sqlcipher.Cursor;
 
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;

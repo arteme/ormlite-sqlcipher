@@ -1,5 +1,6 @@
 package com.j256.ormlite.cipher.android;
 
+import android.database.Cursor;
 import android.support.annotation.NonNull;
 
 import com.j256.ormlite.dao.ObjectCache;
@@ -10,9 +11,8 @@ import com.j256.ormlite.stmt.StatementBuilder.StatementType;
 import com.j256.ormlite.support.CompiledStatement;
 import com.j256.ormlite.support.DatabaseResults;
 
-import net.sqlcipher.Cursor;
-import net.sqlcipher.database.SQLiteDatabase;
-import net.sqlcipher.database.SQLiteStatement;
+import net.zetetic.database.sqlcipher.SQLiteDatabase;
+import net.zetetic.database.sqlcipher.SQLiteStatement;
 
 import java.io.IOException;
 import java.sql.SQLException;

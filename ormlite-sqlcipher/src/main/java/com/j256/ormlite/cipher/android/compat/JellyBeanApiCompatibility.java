@@ -1,11 +1,12 @@
 package com.j256.ormlite.cipher.android.compat;
 
 import android.annotation.TargetApi;
+import android.database.Cursor;
 import android.os.Build;
 import android.os.CancellationSignal;
 
-import net.sqlcipher.Cursor;
-import net.sqlcipher.database.SQLiteDatabase;
+import net.zetetic.database.sqlcipher.SQLiteDatabase;
+
 
 /**
  * Basic class which provides no-op methods for all Android version.

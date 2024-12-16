@@ -1,6 +1,7 @@
 package com.j256.ormlite.cipher.android.apptools.support;
 
 import android.content.Context;
+import android.database.Cursor;
 import android.support.v4.content.AsyncTaskLoader;
 
 import com.j256.ormlite.cipher.android.AndroidCompiledStatement;
@@ -8,8 +9,6 @@ import com.j256.ormlite.dao.Dao;
 import com.j256.ormlite.dao.Dao.DaoObserver;
 import com.j256.ormlite.stmt.PreparedQuery;
 import com.j256.ormlite.support.DatabaseConnection;
-
-import net.sqlcipher.Cursor;
 
 import java.sql.SQLException;
 

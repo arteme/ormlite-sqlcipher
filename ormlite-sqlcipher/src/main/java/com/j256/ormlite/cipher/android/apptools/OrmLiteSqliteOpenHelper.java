@@ -14,9 +14,9 @@ import com.j256.ormlite.support.ConnectionSource;
 import com.j256.ormlite.support.DatabaseConnection;
 import com.j256.ormlite.table.DatabaseTableConfigLoader;
 
-import net.sqlcipher.database.SQLiteDatabase;
-import net.sqlcipher.database.SQLiteDatabaseHook;
-import net.sqlcipher.database.SQLiteOpenHelper;
+import net.zetetic.database.sqlcipher.SQLiteDatabase;
+import net.zetetic.database.sqlcipher.SQLiteDatabaseHook;
+import net.zetetic.database.sqlcipher.SQLiteOpenHelper;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -45,10 +45,10 @@ public abstract class OrmLiteSqliteOpenHelper extends SQLiteOpenHelper {
      * @param factory         Cursor factory or null if none.
      * @param databaseVersion Version of the database we are opening. This causes {@link #onUpgrade(SQLiteDatabase, int, int)} to be
      *                        called if the stored database is a different version.
+     * @param password        Password to use with SQLCipher
      */
-    public OrmLiteSqliteOpenHelper(Context context, String databaseName, SQLiteDatabase.CursorFactory factory, int databaseVersion) {
-        super(context, databaseName, factory, databaseVersion);
-        logger.trace("{}: constructed connectionSource {}", this, connectionSource);
+    public OrmLiteSqliteOpenHelper(Context context, String databaseName, SQLiteDatabase.CursorFactory factory, int databaseVersion, String password) {
+        super(context, databaseName, password, factory, databaseVersion, 0, null, null, false);
     }
 
     /**
@@ -58,11 +58,11 @@ public abstract class OrmLiteSqliteOpenHelper extends SQLiteOpenHelper {
      * @param databaseVersion Version of the database we are opening. This causes {@link #onUpgrade(SQLiteDatabase, int, int)} to be
      *                        called if the stored database is a different version.
      * @param hook            to run on pre/post key events
+     * @param password        Password to use with SQLCipher
      */
     public OrmLiteSqliteOpenHelper(Context context, String databaseName, SQLiteDatabase.CursorFactory factory,
-                                   int databaseVersion, SQLiteDatabaseHook hook) {
-        super(context, databaseName, factory, databaseVersion, hook);
-        logger.trace("{}: constructed connectionSource {}", this, connectionSource);
+                                   int databaseVersion, SQLiteDatabaseHook hook, String password) {
+        super(context, databaseName, password, factory, databaseVersion, 0, null, hook, false);
     }
 
     /**
@@ -75,10 +75,11 @@ public abstract class OrmLiteSqliteOpenHelper extends SQLiteOpenHelper {
      * @param databaseVersion Version of the database we are opening. This causes {@link #onUpgrade(SQLiteDatabase, int, int)} to be
      *                        called if the stored database is a different version.
      * @param configFileId    file-id which probably should be a R.raw.ormlite_config.txt or some static value.
+     * @param password        Password to use with SQLCipher
      */
     public OrmLiteSqliteOpenHelper(Context context, String databaseName, SQLiteDatabase.CursorFactory factory, int databaseVersion,
-                                   int configFileId) {
-        this(context, databaseName, factory, databaseVersion, openFileId(context, configFileId));
+                                   int configFileId, String password) {
+        this(context, databaseName, factory, databaseVersion, openFileId(context, configFileId), password);
     }
 
     /**
@@ -90,10 +91,11 @@ public abstract class OrmLiteSqliteOpenHelper extends SQLiteOpenHelper {
      * @param databaseVersion Version of the database we are opening. This causes {@link #onUpgrade(SQLiteDatabase, int, int)} to be
      *                        called if the stored database is a different version.
      * @param configFile      Configuration file to be loaded.
+     * @param password        Password to use with SQLCipher
      */
     public OrmLiteSqliteOpenHelper(Context context, String databaseName, SQLiteDatabase.CursorFactory factory, int databaseVersion,
-                                   File configFile) {
-        this(context, databaseName, factory, databaseVersion, openFile(configFile));
+                                   File configFile, String password) {
+        this(context, databaseName, factory, databaseVersion, openFile(configFile), password);
     }
 
     /**
@@ -106,10 +108,11 @@ public abstract class OrmLiteSqliteOpenHelper extends SQLiteOpenHelper {
      * @param databaseVersion Version of the database we are opening. This causes {@link #onUpgrade(SQLiteDatabase, int, int)} to be
      *                        called if the stored database is a different version.
      * @param stream          Stream opened to the configuration file to be loaded. It will be closed when this method returns.
+     * @param password        Password to use with SQLCipher
      */
     public OrmLiteSqliteOpenHelper(Context context, String databaseName, SQLiteDatabase.CursorFactory factory, int databaseVersion,
-                                   InputStream stream) {
-        super(context, databaseName, factory, databaseVersion);
+                                   InputStream stream, String password) {
+        super(context, databaseName, password, factory, databaseVersion, 0, null, null, false);
         if (stream == null) {
             return;
         }
@@ -167,7 +170,7 @@ public abstract class OrmLiteSqliteOpenHelper extends SQLiteOpenHelper {
             // we don't throw this exception, but log it for debugging purposes
             logger.warn(new IllegalStateException(), "Getting connectionSource was called after closed");
         } else if (connectionSource == null) {
-            connectionSource = new AndroidConnectionSource(this, getPassword());
+            connectionSource = new AndroidConnectionSource(this);
         }
         return connectionSource;
     }
@@ -317,6 +320,4 @@ public abstract class OrmLiteSqliteOpenHelper extends SQLiteOpenHelper {
             throw new IllegalArgumentException("Could not open config file " + configFile, e);
         }
     }
-
-    protected abstract String getPassword();
 }

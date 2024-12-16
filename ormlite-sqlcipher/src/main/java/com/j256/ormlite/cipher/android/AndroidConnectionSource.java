@@ -11,8 +11,8 @@ import com.j256.ormlite.support.ConnectionSource;
 import com.j256.ormlite.support.DatabaseConnection;
 import com.j256.ormlite.support.DatabaseConnectionProxyFactory;
 
-import net.sqlcipher.database.SQLiteDatabase;
-import net.sqlcipher.database.SQLiteOpenHelper;
+import net.zetetic.database.sqlcipher.SQLiteDatabase;
+import net.zetetic.database.sqlcipher.SQLiteOpenHelper;
 
 import java.sql.SQLException;
 
@@ -28,23 +28,20 @@ public class AndroidConnectionSource extends BaseConnectionSource implements Con
 
 	private final SQLiteOpenHelper helper;
 	private final SQLiteDatabase sqliteDatabase;
-	private final String password;
 	private DatabaseConnection connection = null;
 	private volatile boolean isOpen = true;
 	private final DatabaseType databaseType = new SqliteAndroidDatabaseType();
 	private static DatabaseConnectionProxyFactory connectionProxyFactory;
 	private boolean cancelQueriesEnabled = false;
 
-	public AndroidConnectionSource(SQLiteOpenHelper helper, @NonNull String password) {
+	public AndroidConnectionSource(SQLiteOpenHelper helper) {
 		this.helper = helper;
 		this.sqliteDatabase = null;
-		this.password = password;
 	}
 
-	public AndroidConnectionSource(SQLiteDatabase sqliteDatabase, @NonNull  String password) {
+	public AndroidConnectionSource(SQLiteDatabase sqliteDatabase) {
 		this.helper = null;
 		this.sqliteDatabase = sqliteDatabase;
-		this.password = password;
 	}
 
 	@Override
@@ -68,7 +65,7 @@ public class AndroidConnectionSource extends BaseConnectionSource implements Con
 			SQLiteDatabase db;
 			if (sqliteDatabase == null) {
 				try {
-					db = helper.getWritableDatabase(password);
+					db = helper.getWritableDatabase();
 				} catch (android.database.SQLException e) {
 					throw new SQLException("Getting a writable database from helper " + helper + " failed", e);
 				}
