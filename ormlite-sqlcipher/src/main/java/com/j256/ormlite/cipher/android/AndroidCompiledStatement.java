@@ -1,8 +1,10 @@
 package com.j256.ormlite.cipher.android;
 
 import android.database.Cursor;
-import android.support.annotation.NonNull;
 
+import com.j256.ormlite.cipher.android.compat.ApiCompatibility;
+import com.j256.ormlite.cipher.android.compat.ApiCompatibility.CancellationHook;
+import com.j256.ormlite.cipher.android.compat.ApiCompatibilityUtils;
 import com.j256.ormlite.dao.ObjectCache;
 import com.j256.ormlite.field.SqlType;
 import com.j256.ormlite.logger.Logger;
@@ -14,7 +16,6 @@ import com.j256.ormlite.support.DatabaseResults;
 import net.zetetic.database.sqlcipher.SQLiteDatabase;
 import net.zetetic.database.sqlcipher.SQLiteStatement;
 
-import java.io.IOException;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
@@ -29,7 +30,7 @@ public class AndroidCompiledStatement implements CompiledStatement {
 	private static final Logger logger = LoggerFactory.getLogger(AndroidCompiledStatement.class);
 
 	private static final String[] NO_STRING_ARGS = new String[0];
-	private static final com.j256.ormlite.cipher.android.compat.ApiCompatibility apiCompatibility = com.j256.ormlite.cipher.android.compat.ApiCompatibilityUtils.getCompatibility();
+	private static final ApiCompatibility apiCompatibility = ApiCompatibilityUtils.getCompatibility();
 
 	private final String sql;
 	private final SQLiteDatabase db;
@@ -40,7 +41,7 @@ public class AndroidCompiledStatement implements CompiledStatement {
 	private Cursor cursor;
 	private List<Object> args;
 	private Integer max;
-	private com.j256.ormlite.cipher.android.compat.ApiCompatibility.CancellationHook cancellationHook;
+	private CancellationHook cancellationHook;
 
 	public AndroidCompiledStatement(String sql, SQLiteDatabase db, StatementType type, boolean cancelQueriesEnabled,
 									boolean cacheStore) {
@@ -93,12 +94,12 @@ public class AndroidCompiledStatement implements CompiledStatement {
 	}
 
 	@Override
-	public void close() throws IOException {
+	public void close() throws Exception {
 		if (cursor != null && !cursor.isClosed()) {
 			try {
 				cursor.close();
 			} catch (android.database.SQLException e) {
-				throw new IOException("Problems closing Android cursor", e);
+				throw new SQLException("Problems closing Android cursor", e);
 			}
 		}
 		cancellationHook = null;
@@ -122,7 +123,7 @@ public class AndroidCompiledStatement implements CompiledStatement {
 	public void setObject(int parameterIndex, Object obj, SqlType sqlType) throws SQLException {
 		isInPrep();
 		if (args == null) {
-			args = new ArrayList<>();
+			args = new ArrayList<Object>();
 		}
 		if (obj == null) {
 			args.add(parameterIndex, null);
@@ -171,7 +172,7 @@ public class AndroidCompiledStatement implements CompiledStatement {
 
 	@Override
 	public String getStatement() {
-		return "";
+		return sql;
 	}
 
 	/***
@@ -204,10 +205,9 @@ public class AndroidCompiledStatement implements CompiledStatement {
 		return cursor;
 	}
 
-	@NonNull
 	@Override
 	public String toString() {
-		return getClass().getSimpleName() + "@" + Integer.toHexString(super.hashCode());
+		return sql;
 	}
 
 	/**
@@ -248,7 +248,7 @@ public class AndroidCompiledStatement implements CompiledStatement {
 			// this will work for Object[] as well as String[]
 			return NO_STRING_ARGS;
 		} else {
-			return args.toArray(new Object[0]);
+			return args.toArray(new Object[args.size()]);
 		}
 	}
 
@@ -257,7 +257,7 @@ public class AndroidCompiledStatement implements CompiledStatement {
 			return NO_STRING_ARGS;
 		} else {
 			// we assume we have Strings in args
-			return args.toArray(new String[0]);
+			return args.toArray(new String[args.size()]);
 		}
 	}
 }

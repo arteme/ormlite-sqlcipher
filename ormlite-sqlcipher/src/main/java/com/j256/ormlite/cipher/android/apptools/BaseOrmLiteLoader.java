@@ -1,12 +1,12 @@
 package com.j256.ormlite.cipher.android.apptools;
 
-import java.util.List;
-
 import android.content.AsyncTaskLoader;
 import android.content.Context;
 
 import com.j256.ormlite.dao.Dao;
 import com.j256.ormlite.dao.Dao.DaoObserver;
+
+import java.util.List;
 
 /**
  * An abstract superclass for the ORMLite Loader classes, which closely resembles to the Android's

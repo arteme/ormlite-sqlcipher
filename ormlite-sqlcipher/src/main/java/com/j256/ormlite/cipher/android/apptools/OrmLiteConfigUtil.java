@@ -1,5 +1,15 @@
 package com.j256.ormlite.cipher.android.apptools;
 
+import com.j256.ormlite.cipher.db.SqliteAndroidDatabaseType;
+import com.j256.ormlite.dao.DaoManager;
+import com.j256.ormlite.db.DatabaseType;
+import com.j256.ormlite.field.DatabaseField;
+import com.j256.ormlite.field.DatabaseFieldConfig;
+import com.j256.ormlite.field.ForeignCollectionField;
+import com.j256.ormlite.table.DatabaseTable;
+import com.j256.ormlite.table.DatabaseTableConfig;
+import com.j256.ormlite.table.DatabaseTableConfigLoader;
+
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
@@ -17,16 +27,6 @@ import java.util.Arrays;
 import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
-
-import com.j256.ormlite.dao.DaoManager;
-import com.j256.ormlite.db.DatabaseType;
-import com.j256.ormlite.cipher.db.SqliteAndroidDatabaseType;
-import com.j256.ormlite.field.DatabaseField;
-import com.j256.ormlite.field.DatabaseFieldConfig;
-import com.j256.ormlite.field.ForeignCollectionField;
-import com.j256.ormlite.table.DatabaseTable;
-import com.j256.ormlite.table.DatabaseTableConfig;
-import com.j256.ormlite.table.DatabaseTableConfigLoader;
 
 /**
  * Database configuration file helper class that is used to write a configuration file into the raw resource

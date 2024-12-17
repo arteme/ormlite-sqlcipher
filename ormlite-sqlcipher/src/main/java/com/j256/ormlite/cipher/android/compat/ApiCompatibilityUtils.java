@@ -10,7 +10,7 @@ import android.os.Build;
 @SuppressWarnings("unused")
 public class ApiCompatibilityUtils {
 
-	private static com.j256.ormlite.cipher.android.compat.ApiCompatibility compatibility;
+	private static ApiCompatibility compatibility;
 
 	/**
 	 * Copied from {@link Build.VERSION_CODES}. We don't use those codes because they won't be in certain versions of
@@ -39,14 +39,14 @@ public class ApiCompatibilityUtils {
 		if (Build.VERSION.SDK_INT >= JELLY_BEAN) {
 			compatibility = new JellyBeanApiCompatibility();
 		} else {
-			compatibility = new com.j256.ormlite.cipher.android.compat.BasicApiCompatibility();
+			compatibility = new BasicApiCompatibility();
 		}
 	}
 
 	/**
 	 * Return the compatibility class that matches our build number.
 	 */
-	public static com.j256.ormlite.cipher.android.compat.ApiCompatibility getCompatibility() {
+	public static ApiCompatibility getCompatibility() {
 		return compatibility;
 	}
 }

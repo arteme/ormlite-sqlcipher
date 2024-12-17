@@ -1,8 +1,6 @@
 package com.j256.ormlite.cipher.android.compat;
 
-import android.annotation.TargetApi;
 import android.database.Cursor;
-import android.os.Build;
 import android.os.CancellationSignal;
 
 import net.zetetic.database.sqlcipher.SQLiteDatabase;
@@ -21,10 +19,11 @@ public class JellyBeanApiCompatibility extends BasicApiCompatibility {
 
 	@Override
 	public Cursor rawQuery(SQLiteDatabase db, String sql, String[] selectionArgs, CancellationHook cancellationHook) {
-		if (cancellationHook != null) {
-			throw new RuntimeException("Not supported by ");
-		}
+		if (cancellationHook == null) {
 		return db.rawQuery(sql, selectionArgs);
+		} else {
+			return db.rawQuery(sql, selectionArgs, ((JellyBeanCancellationHook) cancellationHook).cancellationSignal);
+		}
 	}
 
 	@Override
@@ -35,7 +34,6 @@ public class JellyBeanApiCompatibility extends BasicApiCompatibility {
 	/**
 	 * Hook object that supports canceling a running query. 
 	 */
-	@TargetApi(Build.VERSION_CODES.JELLY_BEAN)
 	protected static class JellyBeanCancellationHook implements CancellationHook {
 
 		private final CancellationSignal cancellationSignal;

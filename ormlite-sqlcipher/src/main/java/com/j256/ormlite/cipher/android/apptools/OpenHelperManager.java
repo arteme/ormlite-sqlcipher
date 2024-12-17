@@ -1,9 +1,5 @@
 package com.j256.ormlite.cipher.android.apptools;
 
-import java.lang.reflect.Constructor;
-import java.lang.reflect.ParameterizedType;
-import java.lang.reflect.Type;
-
 import android.content.Context;
 import android.content.res.Resources;
 
@@ -11,6 +7,10 @@ import com.j256.ormlite.dao.BaseDaoImpl;
 import com.j256.ormlite.dao.DaoManager;
 import com.j256.ormlite.logger.Logger;
 import com.j256.ormlite.logger.LoggerFactory;
+
+import java.lang.reflect.Constructor;
+import java.lang.reflect.ParameterizedType;
+import java.lang.reflect.Type;
 
 /**
  * This helps organize and access database connections to optimize connection sharing. There are several schemes to

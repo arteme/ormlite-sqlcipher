@@ -1,12 +1,12 @@
 package com.j256.ormlite.cipher.android.apptools;
 
-import java.sql.SQLException;
-import java.util.Collections;
-import java.util.List;
-
 import android.content.Context;
 
 import com.j256.ormlite.dao.Dao;
+
+import java.sql.SQLException;
+import java.util.Collections;
+import java.util.List;
 
 /**
  * A <code>Loader</code> implementation that queries specified {@link com.j256.ormlite.dao.Dao} for all data, using the

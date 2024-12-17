@@ -1,6 +1,7 @@
 package com.j256.ormlite.cipher.android;
 
 import android.database.Cursor;
+import android.os.Build;
 
 import com.j256.ormlite.dao.ObjectCache;
 import com.j256.ormlite.field.FieldType;
@@ -14,11 +15,9 @@ import com.j256.ormlite.support.CompiledStatement;
 import com.j256.ormlite.support.DatabaseConnection;
 import com.j256.ormlite.support.GeneratedKeyHolder;
 
-
 import net.zetetic.database.sqlcipher.SQLiteDatabase;
 import net.zetetic.database.sqlcipher.SQLiteStatement;
 
-import java.io.IOException;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.sql.Savepoint;
@@ -30,18 +29,12 @@ import java.sql.Savepoint;
  */
 public class AndroidDatabaseConnection implements DatabaseConnection {
 
-    private static final String ANDROID_VERSION = "VERSION__5.1-SNAPSHOT__";
-
     private static Logger logger = LoggerFactory.getLogger(AndroidDatabaseConnection.class);
     private static final String[] NO_STRING_ARGS = new String[0];
 
     private final SQLiteDatabase db;
     private final boolean readWrite;
     private final boolean cancelQueriesEnabled;
-
-    static {
-        VersionUtils.checkCoreVersusAndroidVersions(ANDROID_VERSION);
-    }
 
     public AndroidDatabaseConnection(SQLiteDatabase db, boolean readWrite) {
         this(db, readWrite, false);
@@ -191,13 +184,12 @@ public class AndroidDatabaseConnection implements DatabaseConnection {
 
     @Override
     public int update(String statement, Object[] args, FieldType[] argFieldTypes) throws SQLException {
-        return update(statement, args, argFieldTypes, "updated");
+		return execute(statement, args, argFieldTypes, "updated");
     }
 
     @Override
     public int delete(String statement, Object[] args, FieldType[] argFieldTypes) throws SQLException {
-        // delete is the same as update
-        return update(statement, args, argFieldTypes, "deleted");
+		return execute(statement, args, argFieldTypes, "deleted");
     }
 
     @Override
@@ -266,12 +258,12 @@ public class AndroidDatabaseConnection implements DatabaseConnection {
     }
 
     @Override
-    public void close() throws IOException {
+	public void close() throws Exception {
         try {
             db.close();
             logger.trace("{}: db {} closed", this, db);
         } catch (android.database.SQLException e) {
-            throw new IOException("problems closing the database connection", e);
+			throw new SQLException("problems closing the database connection", e);
         }
     }
 
@@ -311,33 +303,55 @@ public class AndroidDatabaseConnection implements DatabaseConnection {
 
     @Override
     public Connection getUnderlyingConnection() {
+		// not relevant to android-land
         return null;
     }
 
-    private int update(String statement, Object[] args, FieldType[] argFieldTypes, String label) throws SQLException {
+	@Override
+	public String toString() {
+		return getClass().getSimpleName() + "@" + Integer.toHexString(super.hashCode());
+	}
+
+    private int execute(String statement, Object[] args, FieldType[] argFieldTypes, String label) throws SQLException {
+        int result = -1;
         SQLiteStatement stmt = null;
         try {
             stmt = db.compileStatement(statement);
             bindArgs(stmt, args, argFieldTypes);
-            stmt.execute();
+            if (Build.VERSION.SDK_INT >= 11) { // Build.VERSION_CODES.HONEYCOMB
+                result = stmt.executeUpdateDelete();
+            } else {
+                stmt.execute();
+            }
         } catch (android.database.SQLException e) {
             throw new SQLException("updating database failed: " + statement, e);
         } finally {
             closeQuietly(stmt);
-            stmt = null;
         }
-        int result;
-        try {
-            stmt = db.compileStatement("SELECT CHANGES()");
-            result = (int) stmt.simpleQueryForLong();
-        } catch (android.database.SQLException e) {
-            // ignore the exception and just return 1
-            result = 1;
-        } finally {
-            closeQuietly(stmt);
+        if (result < 0) {
+            result = selectNumChanges(label);
         }
         logger.trace("{} statement is compiled and executed, changed {}: {}", label, result, statement);
         return result;
+    }
+
+	/**
+	 * Return the number of changes from the previous statement. This is needed because the executeUpdateDelete() method
+	 * was not introduced until HONEYCOMB. This needs to be in the same connection as the previous statement. Thanks
+	 * to @WonShaw.
+	 */
+    private int selectNumChanges(String label) {
+        SQLiteStatement stmt = null;
+        try {
+            stmt = db.compileStatement("SELECT CHANGES()");
+            return (int) stmt.simpleQueryForLong();
+        } catch (android.database.SQLException e) {
+            logger.warn(e, "{} unable to run statement 'SELECT CHANGES()' to get the changed lines", label);
+            // ignore the exception and just return 1
+            return 1;
+        } finally {
+            closeQuietly(stmt);
+        }
     }
 
     private void bindArgs(SQLiteStatement stmt, Object[] args, FieldType[] argFieldTypes) throws SQLException {
@@ -401,11 +415,6 @@ public class AndroidDatabaseConnection implements DatabaseConnection {
         }
 
         return strings;
-    }
-
-    @Override
-    public String toString() {
-        return getClass().getSimpleName() + "@" + Integer.toHexString(super.hashCode());
     }
 
     /**

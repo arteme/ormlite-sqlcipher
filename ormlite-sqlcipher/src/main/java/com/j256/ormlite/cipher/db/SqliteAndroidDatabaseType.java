@@ -25,6 +25,12 @@ import java.sql.SQLException;
 public class SqliteAndroidDatabaseType extends BaseSqliteDatabaseType {
 
 	@Override
+	public boolean loadDriver() {
+		// noop
+		return true;
+	}
+
+	@Override
 	public boolean isDatabaseUrlThisType(String url, String dbTypePart) {
 		// not used by the android code
 		return true;

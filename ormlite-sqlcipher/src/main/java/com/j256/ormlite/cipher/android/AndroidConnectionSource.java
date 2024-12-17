@@ -1,9 +1,7 @@
 package com.j256.ormlite.cipher.android;
 
-import android.support.annotation.NonNull;
-
-import com.j256.ormlite.db.DatabaseType;
 import com.j256.ormlite.cipher.db.SqliteAndroidDatabaseType;
+import com.j256.ormlite.db.DatabaseType;
 import com.j256.ormlite.logger.Logger;
 import com.j256.ormlite.logger.LoggerFactory;
 import com.j256.ormlite.support.BaseConnectionSource;

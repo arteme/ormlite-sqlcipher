@@ -12,7 +12,7 @@ import com.j256.ormlite.support.ConnectionSource;
  * 
  * @author graywatson, kevingalligan
  */
-public abstract class OrmLiteBaseService<H extends com.j256.ormlite.cipher.android.apptools.OrmLiteSqliteOpenHelper> extends Service {
+public abstract class OrmLiteBaseService<H extends OrmLiteSqliteOpenHelper> extends Service {
 
 	private volatile H helper;
 	private volatile boolean created = false;
@@ -71,7 +71,7 @@ public abstract class OrmLiteBaseService<H extends com.j256.ormlite.cipher.andro
 	 */
 	protected H getHelperInternal(Context context) {
 		@SuppressWarnings({ "unchecked", "deprecation" })
-		H newHelper = (H) com.j256.ormlite.cipher.android.apptools.OpenHelperManager.getHelper(context);
+		H newHelper = (H) OpenHelperManager.getHelper(context);
 		return newHelper;
 	}
 
@@ -85,7 +85,7 @@ public abstract class OrmLiteBaseService<H extends com.j256.ormlite.cipher.andro
 	 * </p>
 	 */
 	protected void releaseHelper(H helper) {
-		com.j256.ormlite.cipher.android.apptools.OpenHelperManager.releaseHelper();
+		OpenHelperManager.releaseHelper();
 		this.helper = null;
 	}
 }

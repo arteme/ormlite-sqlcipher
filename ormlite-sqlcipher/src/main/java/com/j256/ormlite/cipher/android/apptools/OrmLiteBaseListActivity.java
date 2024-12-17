@@ -72,7 +72,7 @@ public abstract class OrmLiteBaseListActivity<H extends OrmLiteSqliteOpenHelper>
 	 */
 	protected H getHelperInternal(Context context) {
 		@SuppressWarnings({ "unchecked", "deprecation" })
-		H newHelper = (H) com.j256.ormlite.cipher.android.apptools.OpenHelperManager.getHelper(context);
+		H newHelper = (H) OpenHelperManager.getHelper(context);
 		return newHelper;
 	}
 
@@ -86,7 +86,7 @@ public abstract class OrmLiteBaseListActivity<H extends OrmLiteSqliteOpenHelper>
 	 * </p>
 	 */
 	protected void releaseHelper(H helper) {
-		com.j256.ormlite.cipher.android.apptools.OpenHelperManager.releaseHelper();
+		OpenHelperManager.releaseHelper();
 		this.helper = null;
 	}
 }
